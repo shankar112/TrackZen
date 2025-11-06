@@ -1,0 +1,24 @@
+[data-theme="dark"] {
+  --bg: #0b0e13;
+  --text: #e7ebf3;
+  --card-bg: #141924;
+  --table-bg: #1e2633;
+}
+
+[data-theme="light"] {
+  --bg: #f9fafb;
+  --text: #1a1a1a;
+  --card-bg: #ffffff;
+  --table-bg: #f1f3f5;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background 0.3s, color 0.3s;
+}
+
+.card,
+.table {
+  background-color: var(--card-bg) !important;
+}
