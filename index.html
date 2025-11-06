@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TrackZen Dashboard</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <!-- Project CSS -->
+  <link href="assets/css/base.css" rel="stylesheet" />
+  <link href="assets/css/components.css" rel="stylesheet" />
+
+  <!-- Small inline modal styling to ensure readable modal on dark theme -->
+  <style>
+    .modal-content { background: var(--card) !important; color: var(--text) !important; border: none; }
+    .modal-header .modal-title { color: var(--text) !important; font-weight: 700; }
+    .modal-body, .modal-footer { color: var(--text) !important; }
+    .btn-close-white { filter: invert(1) brightness(2); }
+    .modal-backdrop.show { background-color: rgba(2,6,12,0.72); }
+  </style>
+</head>
+<body data-theme="dark">
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary shadow-sm">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="#">TrackZen</a>
+    <div class="ms-auto d-flex gap-2 align-items-center">
+      <a class="btn btn-primary" href="devices.html">All Devices</a>
+      <button id="openAddBtn" class="btn btn-success" aria-haspopup="dialog">Add Device</button>
+      <button id="theme-toggle" class="btn btn-outline-secondary">Toggle Theme</button>
+    </div>
+  </div>
+</nav>
+
+<main class="container py-4">
+  <div class="row g-3">
+    <div class="col-md-3">
+      <div class="card kpi text-center shadow p-3">
+        <div class="card-body">
+          <h6>Total Devices</h6>
+          <h3 id="totalDevices">--</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card kpi text-center shadow p-3">
+        <div class="card-body">
+          <h6>Active</h6>
+          <h3 id="activeDevices">--</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card kpi text-center shadow p-3">
+        <div class="card-body">
+          <h6>Needs Service</h6>
+          <h3 id="serviceDevices">--</h3>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card kpi text-center shadow p-3">
+        <div class="card-body">
+          <h6>Expired Warranty</h6>
+          <h3 id="expiredDevices">--</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <h5>Recent Devices</h5>
+    <table class="table table-striped align-middle">
+      <thead>
+        <tr>
+          <th scope="col">ID</th>
+          <th scope="col">Device</th>
+          <th scope="col">Status</th>
+          <th scope="col">Location</th>
+          <th scope="col">Last Service</th>
+        </tr>
+      </thead>
+      <tbody id="deviceTableBody" aria-live="polite"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- Add Device Modal (Bootstrap) -->
+<div class="modal fade" id="addDeviceModal" tabindex="-1" aria-labelledby="addDeviceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addDeviceModalLabel">Add Device</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="addDeviceFormModal" class="row g-3" novalidate>
+          <div class="col-md-4">
+            <label for="device-id" class="form-label">ID</label>
+            <input id="device-id" name="id" type="text" class="form-control" placeholder="Optional">
+          </div>
+          <div class="col-md-4">
+            <label for="device-name" class="form-label">Name <span class="text-danger">*</span></label>
+            <input id="device-name" name="name" required class="form-control" placeholder="Device name">
+          </div>
+          <div class="col-md-4">
+            <label for="device-model" class="form-label">Model</label>
+            <input id="device-model" name="model" class="form-control" placeholder="Model">
+          </div>
+          <div class="col-md-4">
+            <label for="device-status" class="form-label">Status</label>
+            <select id="device-status" name="status" class="form-select">
+              <option value="Active" selected>Active</option>
+              <option value="Needs Service">Needs Service</option>
+              <option value="Retired">Retired</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="device-location" class="form-label">Location</label>
+            <input id="device-location" name="location" class="form-control" placeholder="Location">
+          </div>
+          <div class="col-md-4">
+            <label for="device-lastservice" class="form-label">Last Service</label>
+            <input id="device-lastservice" name="lastService" type="date" class="form-control">
+          </div>
+          <div class="col-md-4">
+            <label for="device-warranty" class="form-label">Warranty</label>
+            <input id="device-warranty" name="warranty" type="date" class="form-control">
+          </div>
+
+          <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Device Detail Modal -->
+<div class="modal fade" id="deviceDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deviceDetailTitle">Device</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="deviceDetailBody"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a id="goToEdit" class="btn btn-primary" href="add-device.html">Edit</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORTANT: Load Bootstrap bundle BEFORE the modules that use `bootstrap.Modal` -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Theme + page logic (modules) -->
+<script type="module" src="assets/js/theme.js"></script>
+<script type="module" src="assets/js/dashboard.js"></script>
+
+</body>
+</html>

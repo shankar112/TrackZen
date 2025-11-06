@@ -1,0 +1,27 @@
+/* assets/css/components.css */
+/* badges */
+.badge {
+  font-weight: 600;
+}
+
+/* table tweaks */
+.table {
+  background: transparent;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table thead th {
+  color: var(--muted);
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+
+.table tbody tr:hover {
+  background: rgba(255,255,255,0.02);
+}
+
+/* small utility */
+.kpi {
+  padding: 1rem;
+  border-radius: .6rem;
+}
